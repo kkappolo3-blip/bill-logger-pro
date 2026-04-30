@@ -5,7 +5,9 @@ const STORAGE_KEY = "portable_bills_v3.5";
 
 function loadBills(): Bill[] {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const bills = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]") as Bill[];
+    // Migrate: ensure payments array exists
+    return bills.map((b) => ({ ...b, payments: b.payments || [] }));
   } catch {
     return [];
   }
@@ -26,8 +28,8 @@ export function useBills() {
     });
   }, []);
 
-  const addBill = useCallback((bill: Omit<Bill, "id" | "paid" | "notes">) => {
-    update((prev) => [...prev, { ...bill, id: Date.now().toString(), paid: false, notes: [] }]);
+  const addBill = useCallback((bill: Omit<Bill, "id" | "paid" | "notes" | "payments">) => {
+    update((prev) => [...prev, { ...bill, id: Date.now().toString(), paid: false, notes: [], payments: [] }]);
   }, [update]);
 
   const updateBill = useCallback((id: string, data: Partial<Bill>) => {
@@ -58,5 +60,29 @@ export function useBills() {
     );
   }, [update]);
 
-  return { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote };
+  const addPayment = useCallback((billId: string, amount: number, label: string) => {
+    update((prev) =>
+      prev.map((b) =>
+        b.id === billId
+          ? {
+              ...b,
+              payments: [
+                ...b.payments,
+                { id: Date.now(), amount, date: new Date().toISOString(), label },
+              ],
+            }
+          : b
+      )
+    );
+  }, [update]);
+
+  const deletePayment = useCallback((billId: string, paymentId: number) => {
+    update((prev) =>
+      prev.map((b) =>
+        b.id === billId ? { ...b, payments: b.payments.filter((p) => p.id !== paymentId) } : b
+      )
+    );
+  }, [update]);
+
+  return { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote, addPayment, deletePayment };
 }
