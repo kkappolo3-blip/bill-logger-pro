@@ -9,7 +9,7 @@ import { BillModal } from "@/components/BillModal";
 import { toast } from "sonner";
 
 const Index = () => {
-  const { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote } = useBills();
+  const { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote, addPayment, deletePayment } = useBills();
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
@@ -34,6 +34,8 @@ const Index = () => {
   const handleTogglePaid = (id: string) => { togglePaid(id); toast("Status pembayaran diperbarui"); };
   const handleAddNote = (billId: string, text: string) => { addNote(billId, text); toast("Catatan disimpan"); };
   const handleDeleteNote = (billId: string, noteId: number) => { deleteNote(billId, noteId); toast("Catatan dihapus"); };
+  const handleAddPayment = (billId: string, amount: number, label: string) => { addPayment(billId, amount, label); toast("Pembayaran dicatat"); };
+  const handleDeletePayment = (billId: string, paymentId: number) => { deletePayment(billId, paymentId); toast("Pembayaran dihapus"); };
 
   const handleSave = (data: Parameters<typeof addBill>[0]) => {
     if (editId) {
@@ -78,7 +80,7 @@ const Index = () => {
               </div>
               <div className="space-y-4">
                 {recurring.map((b) => (
-                  <BillCard key={b.id} bill={b} onTogglePaid={handleTogglePaid} onEdit={handleEdit} onDelete={handleDelete} onAddNote={handleAddNote} onDeleteNote={handleDeleteNote} />
+                  <BillCard key={b.id} bill={b} onTogglePaid={handleTogglePaid} onEdit={handleEdit} onDelete={handleDelete} onAddNote={handleAddNote} onDeleteNote={handleDeleteNote} onAddPayment={handleAddPayment} onDeletePayment={handleDeletePayment} />
                 ))}
               </div>
             </div>
@@ -91,7 +93,7 @@ const Index = () => {
               </div>
               <div className="space-y-4">
                 {oneTime.map((b) => (
-                  <BillCard key={b.id} bill={b} onTogglePaid={handleTogglePaid} onEdit={handleEdit} onDelete={handleDelete} onAddNote={handleAddNote} onDeleteNote={handleDeleteNote} />
+                  <BillCard key={b.id} bill={b} onTogglePaid={handleTogglePaid} onEdit={handleEdit} onDelete={handleDelete} onAddNote={handleAddNote} onDeleteNote={handleDeleteNote} onAddPayment={handleAddPayment} onDeletePayment={handleDeletePayment} />
                 ))}
               </div>
             </div>
