@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, RotateCw, Zap, LogOut, History } from "lucide-react";
 import { useBills } from "@/hooks/useBills";
 import { useAuth } from "@/contexts/AuthContext";
-import { calculateArrears } from "@/lib/billUtils";
+import { getMonthlyEstimate } from "@/lib/billUtils";
 import { SidebarPanel } from "@/components/SidebarPanel";
 import { SummaryCards } from "@/components/SummaryCards";
 import { BillCard } from "@/components/BillCard";
@@ -20,14 +20,18 @@ const Index = () => {
   const editBill = editId ? bills.find((b) => b.id === editId) || null : null;
 
   const { total, paid, unpaid } = useMemo(() => {
-    let total = 0, paid = 0, unpaid = 0;
+    let total = 0, paid = 0;
     bills.forEach((bill) => {
-      const arrears = calculateArrears(bill);
-      if (bill.paid) paid += bill.amount;
-      else unpaid += arrears.total;
-      total += arrears.total;
+      const estimate = getMonthlyEstimate(bill);
+      total += estimate;
+      if (bill.paid) {
+        paid += estimate;
+      } else {
+        const tp = (bill.payments || []).reduce((s, p) => s + p.amount, 0);
+        paid += Math.min(tp, estimate);
+      }
     });
-    return { total, paid, unpaid };
+    return { total, paid, unpaid: Math.max(0, total - paid) };
   }, [bills]);
 
   const activeBills = useMemo(() => bills.filter((b) => !b.paid), [bills]);

@@ -1,5 +1,52 @@
 import type { Bill, Arrears, ArrearsPeriod } from "@/types/bill";
 
+/** Calculate how much a single bill costs in the current calendar month */
+export function getMonthlyEstimate(bill: Bill): number {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const due = new Date(bill.dueDate);
+
+  if (!bill.isRecurring) {
+    // One-time bill: include if due date is in current month
+    if (due.getMonth() === currentMonth && due.getFullYear() === currentYear) {
+      return bill.amount;
+    }
+    return 0;
+  }
+
+  // Recurring: check if any period falls in this month
+  const monthStart = new Date(currentYear, currentMonth, 1);
+  const monthEnd = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59);
+
+  if (bill.interval === "Bulanan") {
+    // Monthly bills always have one period per month (if started on or before this month)
+    if (due <= monthEnd) return bill.amount;
+    return 0;
+  }
+
+  if (bill.interval === "Mingguan") {
+    // Count how many weekly periods fall in this month
+    let count = 0;
+    const d = new Date(due);
+    while (d <= monthEnd) {
+      if (d >= monthStart && d <= monthEnd) count++;
+      d.setDate(d.getDate() + 7);
+      if (d > monthEnd && count > 0) break;
+      if (d.getFullYear() > currentYear + 1) break; // safety
+    }
+    return bill.amount * count;
+  }
+
+  if (bill.interval === "Tahunan") {
+    // Yearly: include if anniversary month matches
+    if (due.getMonth() === currentMonth && due <= monthEnd) return bill.amount;
+    return 0;
+  }
+
+  return bill.amount;
+}
+
 const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
 export function calculateArrears(bill: Bill): Arrears {
