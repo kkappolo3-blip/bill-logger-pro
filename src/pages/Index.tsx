@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, RotateCw, Zap, LogOut, History } from "lucide-react";
 import { useBills } from "@/hooks/useBills";
 import { useAuth } from "@/contexts/AuthContext";
-import { calculateArrears, getMonthlyEstimate } from "@/lib/billUtils";
+import { getMonthlyEstimate } from "@/lib/billUtils";
 import { SidebarPanel } from "@/components/SidebarPanel";
 import { SummaryCards } from "@/components/SummaryCards";
 import { BillCard } from "@/components/BillCard";
