@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { Plus, RotateCw, Zap } from "lucide-react";
+import { Plus, RotateCw, Zap, LogOut } from "lucide-react";
 import { useBills } from "@/hooks/useBills";
+import { useAuth } from "@/contexts/AuthContext";
 import { calculateArrears } from "@/lib/billUtils";
 import { SidebarPanel } from "@/components/SidebarPanel";
 import { SummaryCards } from "@/components/SummaryCards";
@@ -10,6 +11,7 @@ import { toast } from "sonner";
 
 const Index = () => {
   const { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote, addPayment, deletePayment } = useBills();
+  const { user, signOut } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
