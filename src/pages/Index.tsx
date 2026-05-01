@@ -98,7 +98,7 @@ const Index = () => {
           </div>
         </div>
 
-        <SummaryCards total={total} paid={paid} unpaid={unpaid} />
+        <SummaryCards recurring={recurringEst} oneTime={oneTimeEst} total={total} paid={paid} />
 
         {activeBills.length === 0 && (
           <div className="py-20 text-center text-muted-foreground italic text-sm">
