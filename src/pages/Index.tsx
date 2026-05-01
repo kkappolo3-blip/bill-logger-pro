@@ -19,11 +19,12 @@ const Index = () => {
 
   const editBill = editId ? bills.find((b) => b.id === editId) || null : null;
 
-  const { total, paid, unpaid } = useMemo(() => {
-    let total = 0, paid = 0;
+  const { recurring: recurringEst, oneTime: oneTimeEst, total, paid } = useMemo(() => {
+    let recurring = 0, oneTime = 0, paid = 0;
     bills.forEach((bill) => {
       const estimate = getMonthlyEstimate(bill);
-      total += estimate;
+      if (bill.isRecurring) recurring += estimate;
+      else oneTime += estimate;
       if (bill.paid) {
         paid += estimate;
       } else {
@@ -31,7 +32,7 @@ const Index = () => {
         paid += Math.min(tp, estimate);
       }
     });
-    return { total, paid, unpaid: Math.max(0, total - paid) };
+    return { recurring, oneTime, total: recurring + oneTime, paid };
   }, [bills]);
 
   const activeBills = useMemo(() => bills.filter((b) => !b.paid), [bills]);
@@ -97,7 +98,7 @@ const Index = () => {
           </div>
         </div>
 
-        <SummaryCards total={total} paid={paid} unpaid={unpaid} />
+        <SummaryCards recurring={recurringEst} oneTime={oneTimeEst} total={total} paid={paid} />
 
         {activeBills.length === 0 && (
           <div className="py-20 text-center text-muted-foreground italic text-sm">
