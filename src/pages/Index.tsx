@@ -56,15 +56,25 @@ const Index = () => {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Gibikey Tool Tagihan</h1>
-            <p className="text-muted-foreground">Log Catatan v3.5 - Versi Dekstop</p>
+            <h1 className="text-3xl font-bold text-foreground">Tagihan Giboy</h1>
+            <p className="text-muted-foreground text-sm">Semua tagihan keluarga Khair, penyimpanan storage</p>
+            {user && <p className="text-xs text-muted-foreground mt-1">{user.email}</p>}
           </div>
-          <button
-            onClick={() => { setEditId(null); setModalOpen(true); }}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
-          >
-            <Plus className="h-4 w-4" /> Tambah Tagihan
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setEditId(null); setModalOpen(true); }}
+              className="bg-primary hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
+            >
+              <Plus className="h-4 w-4" /> Tambah Tagihan
+            </button>
+            <button
+              onClick={() => { signOut(); toast("Berhasil keluar"); }}
+              className="p-3 bg-muted text-muted-foreground rounded-xl hover:bg-destructive/10 hover:text-destructive transition-colors"
+              title="Keluar"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         <SummaryCards total={total} paid={paid} unpaid={unpaid} />
