@@ -95,8 +95,10 @@ const Index = () => {
 
         <SummaryCards total={total} paid={paid} unpaid={unpaid} />
 
-        {bills.length === 0 && (
-          <div className="py-20 text-center text-muted-foreground italic text-sm">Belum ada catatan tagihan.</div>
+        {activeBills.length === 0 && (
+          <div className="py-20 text-center text-muted-foreground italic text-sm">
+            {bills.length === 0 ? "Belum ada catatan tagihan." : "Semua tagihan sudah lunas! 🎉"}
+          </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
