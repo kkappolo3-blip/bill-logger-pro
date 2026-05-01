@@ -75,11 +75,56 @@ export function formatCurrency(num: number): string {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
 }
 
-export function getStatusLabel(dueDate: string, isPaid: boolean) {
+export function getNextDueDate(bill: Bill): Date {
+  const due = new Date(bill.dueDate);
+  due.setHours(0, 0, 0, 0);
+  
+  if (!bill.isRecurring) return due;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Find the next due date that is >= today
+  const current = new Date(due);
+  while (current < today) {
+    if (bill.interval === "Bulanan") current.setMonth(current.getMonth() + 1);
+    else if (bill.interval === "Mingguan") current.setDate(current.getDate() + 7);
+    else if (bill.interval === "Tahunan") current.setFullYear(current.getFullYear() + 1);
+    else break;
+  }
+  return current;
+}
+
+export function getStatusLabel(dueDate: string, isPaid: boolean, bill?: Bill) {
   if (isPaid) return { label: "Lunas", variant: "success" as const };
-  const due = new Date(dueDate);
+  
   const now = new Date();
   now.setHours(0, 0, 0, 0);
+
+  // For recurring bills with no unpaid arrears, show next due date
+  if (bill && bill.isRecurring) {
+    const periods = getArrearsPeriods(bill);
+    const unpaidPeriods = periods.filter((p) => !p.isPaid);
+    
+    if (unpaidPeriods.length === 0) {
+      // All past periods paid — show time until next due
+      const nextDue = getNextDueDate(bill);
+      const diffDays = Math.ceil((nextDue.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays <= 0) return { label: `Jatuh Tempo`, variant: "warning" as const };
+      if (diffDays <= 3) return { label: `H-${diffDays}`, variant: "warning" as const };
+      return { label: `${diffDays} Hari Lagi`, variant: "info" as const };
+    } else {
+      // Has unpaid periods — show how late based on earliest unpaid
+      const earliestUnpaid = unpaidPeriods[0].dueDate;
+      const diffDays = Math.ceil((earliestUnpaid.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return { label: `Telat ${Math.abs(diffDays)} Hari`, variant: "destructive" as const };
+      if (diffDays <= 3) return { label: `H-${diffDays}`, variant: "warning" as const };
+      return { label: `${diffDays} Hari Lagi`, variant: "info" as const };
+    }
+  }
+
+  // Non-recurring or no bill context
+  const due = new Date(dueDate);
   const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   if (diffDays < 0) return { label: `Telat ${Math.abs(diffDays)} Hari`, variant: "destructive" as const };
   if (diffDays <= 3) return { label: `H-${diffDays}`, variant: "warning" as const };

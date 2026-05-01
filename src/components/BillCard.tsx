@@ -26,7 +26,7 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
   const [showHistory, setShowHistory] = useState(false);
 
   const arrears = calculateArrears(bill);
-  const status = getStatusLabel(bill.dueDate, bill.paid);
+  const status = getStatusLabel(bill.dueDate, bill.paid, bill);
   const periods = getArrearsPeriods(bill);
   const totalPaid = getTotalPaid(bill);
   const remaining = getRemainingAmount(bill);
