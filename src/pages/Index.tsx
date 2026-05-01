@@ -33,9 +33,9 @@ const Index = () => {
   const handleDelete = (id: string) => { deleteBill(id); toast("Tagihan dihapus"); };
   const handleTogglePaid = (id: string) => { togglePaid(id); toast("Status pembayaran diperbarui"); };
   const handleAddNote = (billId: string, text: string) => { addNote(billId, text); toast("Catatan disimpan"); };
-  const handleDeleteNote = (billId: string, noteId: number) => { deleteNote(billId, noteId); toast("Catatan dihapus"); };
+  const handleDeleteNote = (billId: string, noteId: string) => { deleteNote(billId, noteId); toast("Catatan dihapus"); };
   const handleAddPayment = (billId: string, amount: number, label: string) => { addPayment(billId, amount, label); toast("Pembayaran dicatat"); };
-  const handleDeletePayment = (billId: string, paymentId: number) => { deletePayment(billId, paymentId); toast("Pembayaran dihapus"); };
+  const handleDeletePayment = (billId: string, paymentId: string) => { deletePayment(billId, paymentId); toast("Pembayaran dihapus"); };
 
   const handleSave = (data: Parameters<typeof addBill>[0]) => {
     if (editId) {
