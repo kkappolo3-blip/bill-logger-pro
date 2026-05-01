@@ -30,9 +30,9 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
   const periods = getArrearsPeriods(bill);
   const totalPaid = getTotalPaid(bill);
   const remaining = getRemainingAmount(bill);
-  const hasArrears = periods.length > 0 && !bill.paid;
   const unpaidPeriods = periods.filter((p) => !p.isPaid);
   const unpaidCount = unpaidPeriods.length;
+  const hasArrears = unpaidCount > 0 && !bill.paid;
 
   const handleAddNote = () => {
     if (!noteText.trim()) return;
