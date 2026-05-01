@@ -10,9 +10,9 @@ interface BillCardProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onAddNote: (billId: string, text: string) => void;
-  onDeleteNote: (billId: string, noteId: number) => void;
+  onDeleteNote: (billId: string, noteId: string) => void;
   onAddPayment: (billId: string, amount: number, label: string) => void;
-  onDeletePayment: (billId: string, paymentId: number) => void;
+  onDeletePayment: (billId: string, paymentId: string) => void;
 }
 
 export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDeleteNote, onAddPayment, onDeletePayment }: BillCardProps) {
