@@ -66,6 +66,18 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => navigate("/history")}
+              className="relative p-3 bg-muted text-muted-foreground rounded-xl hover:bg-accent transition-colors"
+              title="Riwayat Tagihan"
+            >
+              <History className="h-4 w-4" />
+              {paidCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-success text-success-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {paidCount}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => { setEditId(null); setModalOpen(true); }}
               className="bg-primary hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
             >
