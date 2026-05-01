@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { Plus, RotateCw, Zap, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, RotateCw, Zap, LogOut, History } from "lucide-react";
 import { useBills } from "@/hooks/useBills";
 import { useAuth } from "@/contexts/AuthContext";
 import { calculateArrears } from "@/lib/billUtils";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote, addPayment, deletePayment } = useBills();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
@@ -28,8 +30,10 @@ const Index = () => {
     return { total, paid, unpaid };
   }, [bills]);
 
-  const recurring = bills.filter((b) => b.isRecurring);
-  const oneTime = bills.filter((b) => !b.isRecurring);
+  const activeBills = useMemo(() => bills.filter((b) => !b.paid), [bills]);
+  const paidCount = useMemo(() => bills.filter((b) => b.paid).length, [bills]);
+  const recurring = activeBills.filter((b) => b.isRecurring);
+  const oneTime = activeBills.filter((b) => !b.isRecurring);
 
   const handleEdit = (id: string) => { setEditId(id); setModalOpen(true); };
   const handleDelete = (id: string) => { deleteBill(id); toast("Tagihan dihapus"); };
