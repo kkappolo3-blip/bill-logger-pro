@@ -1,14 +1,14 @@
-export interface BillNote {
-  id: number;
-  text: string;
+export interface Payment {
+  id: string;
+  amount: number;
   date: string;
+  label: string;
 }
 
-export interface Payment {
-  id: number;
-  amount: number;
-  date: string;       // ISO date string
-  label: string;      // e.g. "Cicilan 1", "Bayar periode Maret 2026"
+export interface Note {
+  id: string;
+  text: string;
+  date: string;
 }
 
 export interface Bill {
@@ -16,10 +16,11 @@ export interface Bill {
   name: string;
   amount: number;
   dueDate: string;
+  category: string;
   isRecurring: boolean;
-  interval?: "Bulanan" | "Mingguan" | "Tahunan";
+  interval?: string;
   paid: boolean;
-  notes: BillNote[];
+  notes: Note[];
   payments: Payment[];
 }
 
@@ -29,7 +30,7 @@ export interface Arrears {
 }
 
 export interface ArrearsPeriod {
-  label: string;       // e.g. "Maret 2026"
+  label: string;
   dueDate: Date;
   amount: number;
   paidAmount: number;
