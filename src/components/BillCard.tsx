@@ -31,6 +31,8 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
   const totalPaid = getTotalPaid(bill);
   const remaining = getRemainingAmount(bill);
   const hasArrears = periods.length > 0 && !bill.paid;
+  const unpaidPeriods = periods.filter((p) => !p.isPaid);
+  const unpaidCount = unpaidPeriods.length;
 
   const handleAddNote = () => {
     if (!noteText.trim()) return;
@@ -67,7 +69,7 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
         <div className="bg-destructive/10 border-b border-destructive/20 px-4 py-2 flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-destructive" />
           <span className="text-xs font-bold text-destructive">
-            Menunggak {arrears.times} periode — Total {formatCurrency(arrears.total)}
+            Menunggak {unpaidCount} periode — Total {formatCurrency(remaining)}
           </span>
         </div>
       )}
@@ -114,7 +116,7 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
               className="flex items-center gap-1 text-xs font-bold text-destructive hover:text-destructive/80 mb-2"
             >
               {showPeriods ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              Detail Tunggakan ({periods.length} periode)
+              Detail Tunggakan ({unpaidCount} belum bayar / {periods.length} periode)
             </button>
             {showPeriods && (
               <div className="space-y-1.5">
@@ -156,8 +158,8 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete, onAddNote, onDe
             <div className="flex justify-between items-center mb-2">
               <p className="text-[10px] font-bold text-muted-foreground uppercase">Rencana Pembayaran</p>
               <p className="text-xs font-black text-destructive">
-                {arrears.times > 1 ? `Tunggakan ${arrears.times}x - ` : ""}
-                {formatCurrency(arrears.total)}
+                {unpaidCount > 0 ? `Tunggakan ${unpaidCount}x - ` : ""}
+                {formatCurrency(remaining)}
               </p>
             </div>
 
