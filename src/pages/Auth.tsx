@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { toast } from "sonner";
 import { LogIn, UserPlus, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Auth() {
@@ -29,16 +28,6 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("Gagal login dengan Google");
-    }
-    if (result.redirected) return;
   };
 
   return (
