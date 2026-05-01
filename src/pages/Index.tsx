@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { Plus, RotateCw, Zap, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, RotateCw, Zap, LogOut, History } from "lucide-react";
 import { useBills } from "@/hooks/useBills";
 import { useAuth } from "@/contexts/AuthContext";
 import { calculateArrears } from "@/lib/billUtils";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { bills, addBill, updateBill, deleteBill, togglePaid, addNote, deleteNote, addPayment, deletePayment } = useBills();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
 
@@ -28,8 +30,10 @@ const Index = () => {
     return { total, paid, unpaid };
   }, [bills]);
 
-  const recurring = bills.filter((b) => b.isRecurring);
-  const oneTime = bills.filter((b) => !b.isRecurring);
+  const activeBills = useMemo(() => bills.filter((b) => !b.paid), [bills]);
+  const paidCount = useMemo(() => bills.filter((b) => b.paid).length, [bills]);
+  const recurring = activeBills.filter((b) => b.isRecurring);
+  const oneTime = activeBills.filter((b) => !b.isRecurring);
 
   const handleEdit = (id: string) => { setEditId(id); setModalOpen(true); };
   const handleDelete = (id: string) => { deleteBill(id); toast("Tagihan dihapus"); };
@@ -62,6 +66,18 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => navigate("/history")}
+              className="relative p-3 bg-muted text-muted-foreground rounded-xl hover:bg-accent transition-colors"
+              title="Riwayat Tagihan"
+            >
+              <History className="h-4 w-4" />
+              {paidCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-success text-success-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {paidCount}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => { setEditId(null); setModalOpen(true); }}
               className="bg-primary hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95"
             >
@@ -79,8 +95,10 @@ const Index = () => {
 
         <SummaryCards total={total} paid={paid} unpaid={unpaid} />
 
-        {bills.length === 0 && (
-          <div className="py-20 text-center text-muted-foreground italic text-sm">Belum ada catatan tagihan.</div>
+        {activeBills.length === 0 && (
+          <div className="py-20 text-center text-muted-foreground italic text-sm">
+            {bills.length === 0 ? "Belum ada catatan tagihan." : "Semua tagihan sudah lunas! 🎉"}
+          </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
